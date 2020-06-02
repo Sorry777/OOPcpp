@@ -5,6 +5,8 @@
 #include <time.h>
 using namespace std;
 
+int Shape::sm_shapesCount = 0;
+
 int main()
 {
 	srand((uint32_t)time(NULL));

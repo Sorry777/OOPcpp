@@ -15,7 +15,7 @@ public:
 	T & operator[] (uint32_t ind) const;
 	void push(T const & value);
 	void pop();
-	void reserve(uint32_t cap);
+	void reserve(uint32_t capacity);
 	void print(std::ostream & stream) const;
 
 	uint32_t size() const
@@ -29,43 +29,43 @@ public:
 	void clear();
 
 private:
-	uint32_t sm_size, sm_cap;
-	uint8_t * buf;
+	uint32_t sm_size, sm_capacity;
+	uint8_t * m_buf;
 };
 
 template<class T>
 Container<T>::Container(): 
-	sm_size(0), sm_cap(0), buf(new uint8_t[sm_cap * sizeof(T)]){}
+	sm_size(0), sm_capacity(0), m_buf(nullptr){}
 
 template<class T>
 Container<T>::Container(uint32_t size): 
-	sm_size(0), sm_cap(size), buf(new uint8_t[sm_cap * sizeof(T)]){}
+	sm_size(0), sm_capacity(size), m_buf(new uint8_t[sm_capacity * sizeof(T)]){}
 
 template<class T>
 Container<T>::Container(Container<T> const & other): 
-	sm_size(other.sm_size), sm_cap(other.sm_cap), buf(new uint8_t[sm_cap * sizeof(T)])
+	sm_size(other.sm_size), sm_capacity(other.sm_capacity), m_buf(new uint8_t[sm_capacity * sizeof(T)])
 {
 	for (uint32_t i = 0; i < sm_size; i++) 
 	{
-		new(buf + i * sizeof(T)) T(other[i]);
+		new(m_buf + i * sizeof(T)) T(other[i]);
 	}
 }
 
 template<class T>
 T & Container<T>::operator [] (uint32_t ind) const
 {
-	if (ind >= sm_size) throw exception("Invalid memory access.\n");
-	return (T &)buf[ind * sizeof(T)];
+	if (ind >= sm_size) throw("Invalid memory access.\n");
+	return (T &)m_buf[ind * sizeof(T)];
 }
 
 template<class T>
 void Container<T>::push(T const & value)
 {
-	if (sm_size == sm_cap)
+	if (sm_size == sm_capacity)
 	{
-		reserve(sm_cap * 2 + 1);
+		reserve(sm_capacity * 2 + 1);
 	}
-	new(buf + sm_size * sizeof(T)) T(value);
+	new(m_buf + sm_size * sizeof(T)) T(value);
 	sm_size++;
 }
 
@@ -79,20 +79,20 @@ void Container<T>::pop()
 }
 
 template<class T>
-void Container<T>::reserve(uint32_t cap)
+void Container<T>::reserve(uint32_t capacity)
 {
-	if (sm_cap > cap) return;
-	uint8_t * tmp = new uint8_t[cap * sizeof(T)];
-	sm_cap = cap;
+	if (sm_capacity > capacity) return;
+	uint8_t * tmp = new uint8_t[capacity * sizeof(T)];
+	sm_capacity = capacity;
 	if (sm_size != 0)
 	{
 		for (uint32_t i = 0; i < sm_size * sizeof(T); i++)
 		{
-			tmp[i] = buf[i];
+			tmp[i] = m_buf[i];
 		}
 	}
-	delete[] buf;
-	buf = tmp;
+	delete[] m_buf;
+	m_buf = tmp;
 }
 
 template<class T>
@@ -103,7 +103,7 @@ void Container<T>::print(std::ostream & stream) const
 	uint32_t s = size();
 	for (uint32_t i = 0; i < s; i++)
 	{
-		stream << *((T &)buf[i * sizeof(T)]) << endl;
+		stream << *((T &)m_buf[i * sizeof(T)]) << endl;
 	}
 }
 
@@ -116,6 +116,6 @@ void Container<T>::clear()
 		pop();
 	}
 	sm_size = 0;
-	sm_cap = 0;
-	delete[] buf;
+	sm_capacity = 0;
+	delete[] m_buf;
 }

@@ -69,7 +69,7 @@ public:
 		case 5:
 		{
 			Container<Point> * container = new Container<Point>;
-			Polyline * pl = new Polyline(*container);
+			Polygon * pl = new Polygon(*container);
 			uint32_t rand_range = createRUI(13);
 			for (uint32_t i = 0; i < rand_range; i++)
 			{
@@ -79,8 +79,7 @@ public:
 				pl->addPoint(*p);
 				delete p;
 			}
-			Polygon * polygon = new Polygon(*pl);
-			shape = polygon;
+			shape = pl;
 			break;
 		}
 
